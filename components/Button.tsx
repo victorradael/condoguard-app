@@ -3,7 +3,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 type Props = {
     label: string;
-    theme?: 'primary';
+    theme?: 'primary' | 'logout';
     onPress?: () => void;
 }
 
@@ -13,13 +13,27 @@ export default function Button({ label, theme, onPress }: Props) {
             <View
                 style={[
                     styles.buttonContainer,
-                    { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 },
+                    { borderWidth: 4, borderColor: '#078be3', borderRadius: 18 },
                 ]}>
                 <Pressable
-                    style={[styles.button, { backgroundColor: '#fff' }]}
+                    style={[styles.button, { backgroundColor: '#3e4756' }]}
                     onPress={onPress}>
-                    <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
-                    <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
+                    <FontAwesome name="picture-o" size={18} color="#f3faff" style={styles.buttonIcon} />
+                    <Text style={[styles.buttonLabel, { color: '#f3faff' }]}>{label}</Text>
+                </Pressable>
+            </View>
+        );
+    }
+
+    if (theme === 'logout') {
+        return (
+            <View
+                style={[styles.buttonContainer, { width: '100%', position: 'absolute', bottom: 4 }]}>
+                <Pressable
+                    style={[styles.button, { backgroundColor: '#3e4756', }]}
+                    onPress={onPress}>
+                    <FontAwesome name="sign-out" size={18} color="#f3faff" style={styles.buttonIcon} />
+                    <Text style={[styles.buttonLabel, { color: '#f3faff' }]}>{label}</Text>
                 </Pressable>
             </View>
         );
@@ -55,7 +69,7 @@ const styles = StyleSheet.create({
         paddingRight: 8,
     },
     buttonLabel: {
-        color: '#fff',
+        color: '#3e4756',
         fontSize: 16,
     },
 });

@@ -1,30 +1,52 @@
 import { View, StyleSheet, Text, Modal } from 'react-native';
 import { FlatList, Pressable } from 'react-native-gesture-handler';
 import { useCallback, useState } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
 
 interface DropDownModalProps {
-    options: number[];
-    selectedOption: number | string;
-    setSelectedOption: (option: number) => void;
+    options: (number | string)[];
+    getSelectedOption: () => string | number | undefined;
+    setSelectedOption: (option: string | number | undefined) => void;
+    resetState?: Array<(value: string | undefined) => void>;
+    key?: string;
+    isOptionalFilter?: boolean;
 }
 
-export default function DropDownModal({ options, selectedOption, setSelectedOption }: DropDownModalProps) {
+export default function DropDownModal({ options, getSelectedOption, setSelectedOption, resetState, key, isOptionalFilter = false }: DropDownModalProps) {
     const [modalVisible, setModalVisible] = useState(false);
 
-    const handleSelectOption = useCallback((option: number) => {
+    const handleSelectOption = useCallback((option: number | string) => {
         setSelectedOption(option);
         setModalVisible(false);
+        if (resetState && resetState?.length > 0) {
+            resetState.forEach(reset => reset(undefined));
+        }
     }, []);
 
     return (
-        <View style={styles.containerModal}>
+        <View style={styles.containerModal} key={key}>
 
             {/* BOTÃO PARA ABRIR MODAL */}
-            <Pressable onPress={() => setModalVisible(true)} style={styles.selectButton}>
-                <Text style={styles.selectedText}>
-                    {selectedOption ? selectedOption : "..."}
-                </Text>
-            </Pressable>
+            <View style={isOptionalFilter ? [styles.selectButton, styles.selectButtonOptional] : styles.selectButton}>
+                <Pressable onPress={() => setModalVisible(true)} style={[styles.selectedText, { flex: 0.8, alignItems: "flex-start" }]}>
+                    <Text style={styles.selectedTextFont}>
+                        {getSelectedOption() ? getSelectedOption() : <FontAwesome name="ellipsis-h" size={24} color="#f3faff" />}
+                    </Text>
+                </Pressable>
+                {isOptionalFilter &&
+                    !getSelectedOption() &&
+                    <Pressable onPress={() => setModalVisible(true)} style={[styles.selectedText, { flex: 0.2, alignItems: "flex-end" }]}>
+                        <FontAwesome name="filter" size={24} color="#f3faff" />
+                    </Pressable>
+                }
+                {isOptionalFilter &&
+                    getSelectedOption() &&
+                    <Pressable onPress={() => setSelectedOption(undefined)} style={[styles.selectedText, { flex: 0.2, alignItems: "flex-end" }]}>
+                        <FontAwesome name="times" size={24} color="#f3faff" />
+                    </Pressable>
+                }
+            </View>
+
 
             {/* MODAL COM LISTA DE OPÇÕES */}
             <Modal
@@ -35,13 +57,11 @@ export default function DropDownModal({ options, selectedOption, setSelectedOpti
             >
                 <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
                     <View style={styles.modalContainer}>
-                        <Text style={styles.modalTitle}>Escolha um ano:</Text>
-
                         <FlatList
                             data={options}
                             keyExtractor={(item) => item.toString()}
                             renderItem={({ item }) => {
-                                const isSelected = item === selectedOption;
+                                const isSelected = item === getSelectedOption();
                                 return (
                                     <Pressable
                                         onPress={() => handleSelectOption(item)}
@@ -63,21 +83,36 @@ export default function DropDownModal({ options, selectedOption, setSelectedOpti
 
 const styles = StyleSheet.create({
     containerModal: {
-        // flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#25292e",
+        backgroundColor: "#f3faff",
     },
     selectButton: {
-        padding: 15,
-        backgroundColor: "#444",
+        paddingLeft: 15,
+        paddingRight: 15,
+        backgroundColor: "#078be3",
         borderRadius: 8,
-        width: "80%",
+        alignItems: "center",
+        width: 300,
+        marginBottom: 16,
+    },
+    selectButtonOptional: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignContent: "center",
         alignItems: "center",
     },
     selectedText: {
         fontSize: 16,
-        color: "#fff",
+        color: "#f3faff",
+        fontWeight: 'bold',
+        paddingTop: 15, paddingBottom: 15
+    },
+    selectedTextFont: {
+        fontSize: 16,
+        color: "#f3faff",
+        fontWeight: 'bold',
+        fontFamily: 'sans-serif, Roboto',
     },
     modalOverlay: {
         flex: 1,
@@ -87,15 +122,9 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         width: "80%",
-        backgroundColor: "#fff",
+        backgroundColor: "#f3faff",
         padding: 20,
         borderRadius: 10,
-    },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 10,
-        textAlign: "center",
     },
     option: {
         padding: 15,
@@ -104,14 +133,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     selectedOption: {
-        backgroundColor: "#ffa726",
+        backgroundColor: "#078be3",
     },
     optionText: {
         fontSize: 16,
-        color: "#333",
+        color: "#3e4756",
     },
     selectedOptionText: {
         fontWeight: "bold",
-        color: "#000",
+        color: "#f3faff",
     },
 });
