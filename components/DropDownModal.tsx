@@ -9,10 +9,11 @@ interface DropDownModalProps {
     setSelectedOption: (option: string | number | undefined) => void;
     resetState?: Array<(value: string | undefined) => void>;
     key?: string;
+    label?: string;
     isOptionalFilter?: boolean;
 }
 
-export default function DropDownModal({ options, getSelectedOption, setSelectedOption, resetState, key, isOptionalFilter = false }: DropDownModalProps) {
+export default function DropDownModal({ options, getSelectedOption, setSelectedOption, resetState, key, label, isOptionalFilter = false }: DropDownModalProps) {
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleSelectOption = useCallback((option: number | string) => {
@@ -28,9 +29,9 @@ export default function DropDownModal({ options, getSelectedOption, setSelectedO
 
             {/* BOTÃO PARA ABRIR MODAL */}
             <View style={isOptionalFilter ? [styles.selectButton, styles.selectButtonOptional] : styles.selectButton}>
-                <Pressable onPress={() => setModalVisible(true)} style={[styles.selectedText, { flex: 0.8, alignItems: "flex-start" }]}>
+                <Pressable onPress={() => setModalVisible(true)} style={[styles.selectedText, isOptionalFilter ? { flex: 0.8, alignItems: "flex-start" } : {}]}>
                     <Text style={styles.selectedTextFont}>
-                        {getSelectedOption() ? getSelectedOption() : <FontAwesome name="ellipsis-h" size={24} color="#f3faff" />}
+                        {getSelectedOption() ? getSelectedOption() : label ? label : <FontAwesome name="ellipsis-h" size={24} color="#f3faff" />}
                     </Text>
                 </Pressable>
                 {isOptionalFilter &&
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#078be3",
         borderRadius: 8,
         alignItems: "center",
-        width: 300,
+        width: '100%',
         marginBottom: 16,
     },
     selectButtonOptional: {
@@ -106,13 +107,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#f3faff",
         fontWeight: 'bold',
-        paddingTop: 15, paddingBottom: 15
+        paddingTop: 15,
+        paddingBottom: 15,
+        width: '100%',
+        alignItems: "center",
     },
     selectedTextFont: {
         fontSize: 16,
         color: "#f3faff",
         fontWeight: 'bold',
-        fontFamily: 'sans-serif, Roboto',
+        fontFamily: 'sans-serif',
     },
     modalOverlay: {
         flex: 1,

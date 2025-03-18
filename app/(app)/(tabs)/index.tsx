@@ -143,10 +143,9 @@ const styles = StyleSheet.create({
 	screen: {
 		flex: 1,
 		backgroundColor: '#f3faff',
-		alignItems: 'center'
+		padding: 20,
 	},
 	container: {
-		width: '80%',
 		alignContent: 'center',
 		justifyContent: 'center',
 		borderTopWidth: 2,
