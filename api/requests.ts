@@ -39,3 +39,14 @@ export const fetchExpenses = async () => {
     });
     return response.data;
 };
+
+export const createExpense = async (expenseData: {
+    description: string;
+    amount: number;
+    date: string;
+}) => {
+    const response = await axios.post(`${API_URL}/expenses`, expenseData, {
+        headers: await getAuthHeader(),
+    });
+    return response.data;
+};
