@@ -12,5 +12,7 @@
 ![Sing In](assets/docs/sign-in.png)
 ![Chart](assets/docs/main-page.png)
 ![Bill Registration](assets/docs/bill-registration5.png)
+![Bill Registered Chart](assets/docs/main-page2.png)
+
 
 </div>
