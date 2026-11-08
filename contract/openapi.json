@@ -1,0 +1,70 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Condoguard API (contrato usado pelo app)",
+    "version": "0.1.0",
+    "description": "Subconjunto do contrato da API para o app. /auth/refresh, /auth/logout e /users/me dependem da 1a (FAB-5) e aqui seguem o desenho do plano; substituir por snapshot do /openapi.json real quando a 1a entregar."
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "security": [],
+        "responses": {
+          "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Health" } } } }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "authLogin",
+        "security": [],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } } },
+        "responses": {
+          "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenPair" } } } },
+          "401": { "description": "Credenciais inválidas", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "authRefresh",
+        "security": [],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RefreshRequest" } } } },
+        "responses": {
+          "200": { "description": "Novo par (refresh rotativo)", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenPair" } } } },
+          "401": { "description": "Refresh inválido, expirado ou revogado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "authLogout",
+        "security": [],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RefreshRequest" } } } },
+        "responses": { "204": { "description": "Refresh revogado" } }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "operationId": "getMe",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
+          "401": { "description": "Não autenticado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } },
+    "schemas": {
+      "Error": { "type": "object", "required": ["error"], "properties": { "error": { "type": "string" } } },
+      "Health": { "type": "object", "required": ["status"], "properties": { "status": { "type": "string" }, "demo": { "type": "boolean", "description": "true quando a API roda em ambiente de demonstração" } } },
+      "LoginRequest": { "type": "object", "required": ["username", "password"], "properties": { "username": { "type": "string" }, "password": { "type": "string" } } },
+      "RefreshRequest": { "type": "object", "required": ["refreshToken"], "properties": { "refreshToken": { "type": "string" } } },
+      "TokenPair": { "type": "object", "required": ["accessToken", "refreshToken", "roles"], "properties": { "accessToken": { "type": "string" }, "refreshToken": { "type": "string" }, "roles": { "type": "array", "items": { "type": "string" } } } },
+      "User": { "type": "object", "required": ["id", "username", "email", "roles"], "properties": { "id": { "type": "string" }, "username": { "type": "string" }, "email": { "type": "string", "format": "email" }, "roles": { "type": "array", "items": { "type": "string" } } } }
+    }
+  }
+}
