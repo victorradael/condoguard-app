@@ -3,8 +3,7 @@
   "build": {
     "internal": {
       "distribution": "internal",
-      "android": { "buildType": "apk" },
-      "env": { "EXPO_PUBLIC_API_URL": "https://REPLACE-WITH-TUNNEL-URL" }
+      "android": { "buildType": "apk" }
     },
     "production": { "autoIncrement": true }
   }
