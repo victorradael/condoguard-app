@@ -57,7 +57,8 @@ async function refreshAccessToken(): Promise<string | null> {
         return null;
       }
       const pair = await parse<TokenPair>(res);
-      await tokenStore.set(pair);
+      if (!pair.accessToken || !pair.refreshToken) return null;
+      await tokenStore.set({ accessToken: pair.accessToken, refreshToken: pair.refreshToken });
       return pair.accessToken;
     } catch {
       return null; // falha de rede: mantém a sessão
@@ -80,12 +81,13 @@ async function authed<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export const api = {
   health: () => raw("/health").then((r) => parse<Health>(r)),
-  async login(username: string, password: string): Promise<TokenPair> {
+  async login(email: string, password: string): Promise<TokenPair> {
     const pair = await raw("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     }).then((r) => parse<TokenPair>(r));
-    await tokenStore.set(pair);
+    if (!pair.accessToken || !pair.refreshToken) throw new ApiError(500, "Resposta inválida do servidor");
+    await tokenStore.set({ accessToken: pair.accessToken, refreshToken: pair.refreshToken });
     return pair;
   },
   async logout(): Promise<void> {

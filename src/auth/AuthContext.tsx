@@ -5,7 +5,7 @@ import { tokenStore } from "./tokenStore";
 type AuthState = {
   status: "loading" | "signedOut" | "signedIn";
   user: User | null;
-  signIn: (username: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -35,8 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })();
   }, [expire]);
 
-  const signIn = useCallback(async (username: string, password: string) => {
-    await api.login(username, password);
+  const signIn = useCallback(async (email: string, password: string) => {
+    await api.login(email, password);
     setUser(await api.me());
     setStatus("signedIn");
   }, []);

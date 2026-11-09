@@ -8,9 +8,9 @@ jest.mock("../src/auth/AuthContext", () => ({ useAuth: () => ({ signIn: mockSign
 it("mostra erro em credenciais inválidas", async () => {
   mockSignIn.mockRejectedValueOnce(new ApiError(401, "x"));
   await render(<Login />);
-  await fireEvent.changeText(screen.getByLabelText("Usuário"), "ana");
+  await fireEvent.changeText(screen.getByLabelText("E-mail"), "ana@example.com");
   await fireEvent.changeText(screen.getByLabelText("Senha"), "errada");
   await fireEvent.press(screen.getByRole("button", { name: "Entrar" }));
-  await waitFor(() => expect(screen.getByText("Usuário ou senha inválidos.")).toBeTruthy());
-  expect(mockSignIn).toHaveBeenCalledWith("ana", "errada");
+  await waitFor(() => expect(screen.getByText("E-mail ou senha inválidos.")).toBeTruthy());
+  expect(mockSignIn).toHaveBeenCalledWith("ana@example.com", "errada");
 });

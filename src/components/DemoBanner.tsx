@@ -8,7 +8,7 @@ export function DemoBanner() {
   const t = useTheme();
   const [demo, setDemo] = useState(false);
   useEffect(() => {
-    api.health().then((h) => setDemo(h.demo === true)).catch(() => {});
+    api.health().then((h) => setDemo(!!(h as { status: string; demo?: boolean }).demo)).catch(() => {});
   }, []);
   if (!demo) return null;
   return (

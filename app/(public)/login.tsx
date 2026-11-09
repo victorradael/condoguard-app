@@ -10,7 +10,7 @@ import { useTheme } from "../../src/theme";
 export default function Login() {
   const t = useTheme();
   const { signIn } = useAuth();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,9 +19,9 @@ export default function Login() {
     setError(null);
     setLoading(true);
     try {
-      await signIn(username.trim(), password);
+      await signIn(email.trim(), password);
     } catch (e) {
-      setError(e instanceof ApiError && e.status === 401 ? "Usuário ou senha inválidos." : "Não foi possível entrar. Tente novamente.");
+      setError(e instanceof ApiError && e.status === 401 ? "E-mail ou senha inválidos." : "Não foi possível entrar. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,7 @@ export default function Login() {
     <SafeAreaView style={[styles.root, { backgroundColor: t.bg }]}>
       <View style={styles.form}>
         <Text style={[styles.title, { color: t.text }]}>Condoguard</Text>
-        <TextField label="Usuário" value={username} onChangeText={setUsername} autoCapitalize="none" autoCorrect={false} textContentType="username" />
+        <TextField label="E-mail" value={email} onChangeText={setEmail} autoCapitalize="none" autoCorrect={false} keyboardType="email-address" textContentType="emailAddress" />
         <TextField label="Senha" value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" textContentType="password" />
         {error && <Text accessibilityRole="alert" style={{ color: t.danger, marginBottom: 12 }}>{error}</Text>}
         <Button title="Entrar" onPress={submit} loading={loading} />
