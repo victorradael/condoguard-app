@@ -73,7 +73,7 @@ it("chama setActiveUnit e volta ao selecionar uma unidade", async () => {
   render(<TrocarUnidade />);
 
   await waitFor(() => expect(screen.getByText(/Unidade 202/)).toBeTruthy());
-  fireEvent.press(screen.getByAccessibilityHint ? screen.getByRole("button", { name: /Selecionar.*Unidade 202/ }) : screen.getByText(/Unidade 202/));
+  fireEvent.press(screen.getByRole("button", { name: /Selecionar.*Unidade 202/ }));
 
   await waitFor(() => expect(mockSetActiveUnit).toHaveBeenCalledWith(unit202));
   await waitFor(() => expect(mockBack).toHaveBeenCalled());

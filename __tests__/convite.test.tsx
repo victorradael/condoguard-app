@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, userEvent, waitFor } from "@testing-library/react-native";
+import { render, screen, userEvent, waitFor } from "@testing-library/react-native";
 import Convite from "../app/(public)/convite";
 import { ApiError } from "../src/api/client";
 

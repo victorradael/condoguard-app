@@ -30,6 +30,8 @@ export default function Perfil() {
   }, []);
 
   useEffect(() => {
+    // Busca inicial: o setState ocorre depois do await, não de forma síncrona.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
 
