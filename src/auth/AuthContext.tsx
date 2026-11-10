@@ -1,11 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { api, setSessionExpiredHandler, type User } from "../api/client";
+import { api, setSessionExpiredHandler, type MyUnit, type User } from "../api/client";
 import { tokenStore } from "./tokenStore";
+import { unitStore } from "../stores/unitStore";
 
 type AuthState = {
   status: "loading" | "signedOut" | "signedIn";
   user: User | null;
-  signIn: (email: string, password: string) => Promise<void>;
+  activeUnit: MyUnit | null;
+  setActiveUnit: (unit: MyUnit) => Promise<void>;
+  signIn: (email: string, password: string, condominiumId?: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -14,9 +17,11 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthState["status"]>("loading");
   const [user, setUser] = useState<User | null>(null);
+  const [activeUnit, setActiveUnitState] = useState<MyUnit | null>(null);
 
   const expire = useCallback(() => {
     setUser(null);
+    setActiveUnitState(null);
     setStatus("signedOut");
   }, []);
 
@@ -25,28 +30,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (async () => {
       if (!(await tokenStore.get())) return expire();
       try {
-        setUser(await api.me());
+        const [u, unit] = await Promise.all([api.me(), unitStore.get()]);
+        setUser(u);
+        setActiveUnitState(unit);
         setStatus("signedIn");
       } catch {
-        // 401 já foi tratado pelo handler; erro de rede mantém sessão local
         if (await tokenStore.get()) setStatus("signedIn");
         else expire();
       }
     })();
   }, [expire]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    await api.login(email, password);
-    setUser(await api.me());
+  const signIn = useCallback(async (email: string, password: string, condominiumId?: string) => {
+    await api.login(email, password, condominiumId);
+    const [u, profile] = await Promise.all([api.me(), api.profile.get()]);
+    setUser(u);
+    // Pick the first active unit as default; user can switch later.
+    const firstUnit = profile.units.find((u) => u.active) ?? profile.units[0] ?? null;
+    if (firstUnit) {
+      await unitStore.set(firstUnit);
+      setActiveUnitState(firstUnit);
+    }
     setStatus("signedIn");
   }, []);
 
   const signOut = useCallback(async () => {
-    await api.logout();
+    await Promise.all([api.logout(), unitStore.clear()]);
     expire();
   }, [expire]);
 
-  const value = useMemo(() => ({ status, user, signIn, signOut }), [status, user, signIn, signOut]);
+  const setActiveUnit = useCallback(async (unit: MyUnit) => {
+    await unitStore.set(unit);
+    setActiveUnitState(unit);
+  }, []);
+
+  const value = useMemo(
+    () => ({ status, user, activeUnit, setActiveUnit, signIn, signOut }),
+    [status, user, activeUnit, setActiveUnit, signIn, signOut],
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
