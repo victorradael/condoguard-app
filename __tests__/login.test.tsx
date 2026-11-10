@@ -12,5 +12,5 @@ it("mostra erro em credenciais inválidas", async () => {
   await fireEvent.changeText(screen.getByLabelText("Senha"), "errada");
   await fireEvent.press(screen.getByRole("button", { name: "Entrar" }));
   await waitFor(() => expect(screen.getByText("E-mail ou senha inválidos.")).toBeTruthy());
-  expect(mockSignIn).toHaveBeenCalledWith("ana@example.com", "errada");
+  expect(mockSignIn).toHaveBeenCalledWith("ana@example.com", "errada", undefined);
 });
