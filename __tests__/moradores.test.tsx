@@ -74,7 +74,7 @@ beforeEach(() => {
 it("lista os moradores da unidade", async () => {
   mockLinks.mockResolvedValueOnce({ items: [link1, link2] });
 
-  render(<Moradores />);
+  await render(<Moradores />);
 
   await waitFor(() => expect(screen.getByText("Maria Souza")).toBeTruthy());
   expect(screen.getByText("Pedro Lima")).toBeTruthy();
@@ -85,7 +85,7 @@ it("lista os moradores da unidade", async () => {
 it("exibe estado vazio quando não há moradores", async () => {
   mockLinks.mockResolvedValueOnce({ items: [] });
 
-  render(<Moradores />);
+  await render(<Moradores />);
 
   await waitFor(() => expect(screen.getByText("Nenhum morador ativo.")).toBeTruthy());
 });
@@ -93,7 +93,7 @@ it("exibe estado vazio quando não há moradores", async () => {
 it("mostra botões Remover para morador e dependente quando canManageHousehold=true", async () => {
   mockLinks.mockResolvedValueOnce({ items: [link1, link2] });
 
-  render(<Moradores />);
+  await render(<Moradores />);
 
   await waitFor(() => expect(screen.getByText("Maria Souza")).toBeTruthy());
   expect(screen.getByLabelText("Remover Maria Souza")).toBeTruthy();
@@ -111,7 +111,7 @@ it("não mostra botões Remover quando canManageHousehold=false", async () => {
   });
   mockLinks.mockResolvedValueOnce({ items: [link1] });
 
-  render(<Moradores />);
+  await render(<Moradores />);
 
   await waitFor(() => expect(screen.getByText("Maria Souza")).toBeTruthy());
   expect(screen.queryByLabelText("Remover Maria Souza")).toBeNull();
@@ -126,7 +126,7 @@ it("não mostra botão Remover para vínculo de tipo proprietário", async () =>
   };
   mockLinks.mockResolvedValueOnce({ items: [proprietarioLink] });
 
-  render(<Moradores />);
+  await render(<Moradores />);
 
   await waitFor(() => expect(screen.getByText("Carlos Prop")).toBeTruthy());
   expect(screen.queryByLabelText("Remover Carlos Prop")).toBeNull();
@@ -135,7 +135,7 @@ it("não mostra botão Remover para vínculo de tipo proprietário", async () =>
 it("mostra erro quando API falha ao carregar moradores", async () => {
   mockLinks.mockRejectedValueOnce(new Error("network"));
 
-  render(<Moradores />);
+  await render(<Moradores />);
 
   await waitFor(() =>
     expect(screen.getByText("Não foi possível carregar os moradores.")).toBeTruthy(),
@@ -145,12 +145,12 @@ it("mostra erro quando API falha ao carregar moradores", async () => {
 it("mostra botão Adicionar e navega para a tela correta", async () => {
   mockLinks.mockResolvedValueOnce({ items: [] });
 
-  render(<Moradores />);
+  await render(<Moradores />);
 
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "+ Adicionar morador ou dependente" })).toBeTruthy(),
   );
-  fireEvent.press(
+  await fireEvent.press(
     screen.getByRole("button", { name: "+ Adicionar morador ou dependente" }),
   );
   expect(mockPush).toHaveBeenCalledWith("/(app)/adicionar-morador");
@@ -167,7 +167,7 @@ it("não mostra botão Adicionar quando canManageHousehold=false", async () => {
   });
   mockLinks.mockResolvedValueOnce({ items: [] });
 
-  render(<Moradores />);
+  await render(<Moradores />);
 
   await waitFor(() => expect(screen.getByText("Nenhum morador ativo.")).toBeTruthy());
   expect(

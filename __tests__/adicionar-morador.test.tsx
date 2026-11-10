@@ -51,7 +51,7 @@ beforeEach(() => {
 it("mostra erro ao tentar adicionar sem informar o nome", async () => {
   await render(<AdicionarMorador />);
 
-  fireEvent.press(screen.getByRole("button", { name: "Adicionar" }));
+  await fireEvent.press(screen.getByRole("button", { name: "Adicionar" }));
 
   await waitFor(() =>
     expect(screen.getByText("Informe o nome completo.")).toBeTruthy(),
@@ -86,7 +86,7 @@ it("adiciona dependente quando tipo Dependente está selecionado", async () => {
 
   await render(<AdicionarMorador />);
 
-  fireEvent.press(screen.getByRole("button", { name: "Dependente" }));
+  await fireEvent.press(screen.getByRole("button", { name: "Dependente" }));
   await user.type(screen.getByLabelText("Nome completo *"), "Lucas Ferreira");
   await user.press(screen.getByRole("button", { name: "Adicionar" }));
 

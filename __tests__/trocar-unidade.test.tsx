@@ -70,10 +70,10 @@ it("chama setActiveUnit e volta ao selecionar uma unidade", async () => {
   mockSetActiveUnit.mockResolvedValueOnce(undefined);
   mockUnits.mockResolvedValueOnce({ items: [unit101, unit202] });
 
-  render(<TrocarUnidade />);
+  await render(<TrocarUnidade />);
 
   await waitFor(() => expect(screen.getByText(/Unidade 202/)).toBeTruthy());
-  fireEvent.press(screen.getByRole("button", { name: /Selecionar.*Unidade 202/ }));
+  await fireEvent.press(screen.getByRole("button", { name: /Selecionar.*Unidade 202/ }));
 
   await waitFor(() => expect(mockSetActiveUnit).toHaveBeenCalledWith(unit202));
   await waitFor(() => expect(mockBack).toHaveBeenCalled());
@@ -82,7 +82,7 @@ it("chama setActiveUnit e volta ao selecionar uma unidade", async () => {
 it("marca a unidade ativa visualmente", async () => {
   mockUnits.mockResolvedValueOnce({ items: [unit101, unit202] });
 
-  render(<TrocarUnidade />);
+  await render(<TrocarUnidade />);
 
   await waitFor(() => expect(screen.getByText("Ativa")).toBeTruthy());
 });
@@ -90,7 +90,7 @@ it("marca a unidade ativa visualmente", async () => {
 it("mostra mensagem de erro quando a API falha", async () => {
   mockUnits.mockRejectedValueOnce(new Error("network"));
 
-  render(<TrocarUnidade />);
+  await render(<TrocarUnidade />);
 
   await waitFor(() =>
     expect(screen.getByText("Não foi possível carregar as unidades.")).toBeTruthy(),

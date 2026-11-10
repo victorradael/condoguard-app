@@ -39,7 +39,7 @@ beforeEach(() => jest.clearAllMocks());
 it("exibe os dados do perfil carregados da API", async () => {
   mockGet.mockResolvedValueOnce(profileData);
 
-  render(<Perfil />);
+  await render(<Perfil />);
 
   await waitFor(() => expect(screen.getByDisplayValue("João Silva")).toBeTruthy());
   expect(screen.getByDisplayValue("(11) 99999-0000")).toBeTruthy();
@@ -52,7 +52,7 @@ it("exibe CPF quando presente no perfil", async () => {
     person: { ...profileData.person, cpf: "123.456.789-00" },
   });
 
-  render(<Perfil />);
+  await render(<Perfil />);
 
   await waitFor(() => expect(screen.getByText("123.456.789-00")).toBeTruthy());
 });
@@ -64,10 +64,10 @@ it("salva perfil e exibe confirmação de sucesso", async () => {
     person: { ...profileData.person, fullName: "João Atualizado" },
   });
 
-  render(<Perfil />);
+  await render(<Perfil />);
 
   await waitFor(() => expect(screen.getByDisplayValue("João Silva")).toBeTruthy());
-  fireEvent.press(screen.getByRole("button", { name: "Salvar" }));
+  await fireEvent.press(screen.getByRole("button", { name: "Salvar" }));
 
   await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
   await waitFor(() => expect(screen.getByText("Perfil salvo com sucesso!")).toBeTruthy());
@@ -77,10 +77,10 @@ it("mostra erro 422 ao salvar com dados inválidos", async () => {
   mockGet.mockResolvedValueOnce(profileData);
   mockUpdate.mockRejectedValueOnce(new ApiError(422, "Unprocessable"));
 
-  render(<Perfil />);
+  await render(<Perfil />);
 
   await waitFor(() => expect(screen.getByDisplayValue("João Silva")).toBeTruthy());
-  fireEvent.press(screen.getByRole("button", { name: "Salvar" }));
+  await fireEvent.press(screen.getByRole("button", { name: "Salvar" }));
 
   await waitFor(() =>
     expect(screen.getByText("Dados inválidos. Verifique os campos.")).toBeTruthy(),
@@ -91,10 +91,10 @@ it("mostra erro genérico ao salvar quando API falha com status não mapeado", a
   mockGet.mockResolvedValueOnce(profileData);
   mockUpdate.mockRejectedValueOnce(new ApiError(500, "Internal Server Error"));
 
-  render(<Perfil />);
+  await render(<Perfil />);
 
   await waitFor(() => expect(screen.getByDisplayValue("João Silva")).toBeTruthy());
-  fireEvent.press(screen.getByRole("button", { name: "Salvar" }));
+  await fireEvent.press(screen.getByRole("button", { name: "Salvar" }));
 
   await waitFor(() =>
     expect(screen.getByText("Não foi possível salvar. Tente novamente.")).toBeTruthy(),
@@ -104,7 +104,7 @@ it("mostra erro genérico ao salvar quando API falha com status não mapeado", a
 it("mostra erro quando não consegue carregar o perfil", async () => {
   mockGet.mockRejectedValueOnce(new Error("network"));
 
-  render(<Perfil />);
+  await render(<Perfil />);
 
   await waitFor(() =>
     expect(screen.getByText("Não foi possível carregar o perfil.")).toBeTruthy(),
